@@ -1,0 +1,9 @@
+# 方块
+tile.converter.name=能量转换器
+
+# GUI
+gui.eu2emc.eu_input=EU输入: %d EU/t
+gui.eu2emc.stored_emc=储存的EMC: %.2f EMC
+gui.eu2emc.total_eu=总EU输入: %d EU
+gui.eu2emc.total_emc=总EMC输出: %.2f EMC
+gui.eu2emc.collect=收取EMC

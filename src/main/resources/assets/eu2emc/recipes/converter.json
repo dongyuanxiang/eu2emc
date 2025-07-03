@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CRC",
+    "RSR",
+    "CRC"
+  ],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "C": { "item": "ic2:crafting" , "data": 1 },
+    "S": { "item": "projecte:item.pe_philosophers_stone" }
+  },
+  "result": {
+    "item": "eu2emc:converter",
+    "count": 1
+  }
+}

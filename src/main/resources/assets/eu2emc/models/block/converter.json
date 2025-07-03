@@ -1,0 +1,15 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "eu2emc:blocks/converter_back",
+    "down": "eu2emc:blocks/converter_bottom",
+    "up": "eu2emc:blocks/converter_top",
+    "north": "eu2emc:blocks/converter_front",
+    "south": "eu2emc:blocks/converter_back",
+    "west": "eu2emc:blocks/converter_leftright",
+    "east": "eu2emc:blocks/converter_leftright"
+  },
+  "variants": {
+    "facing=north": { "model": "eu2emc:block/converter" }
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "eu2emc",
+    "name": "EU to EMC Converter",
+    "description": "Converts EU from IC2 to EMC from ProjectE",
+    "version": "1.0.0",
+    "mcversion": "1.12.2",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["dongyuanxiang"],
+    "credits": "Thanks to IC2 and ProjectE teams",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": ["ic2", "projecte"]
+  }
+]

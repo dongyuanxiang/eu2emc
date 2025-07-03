@@ -1,0 +1,9 @@
+# 方块
+tile.converter.name=Energy Converter
+
+# GUI - 注意添加格式占位符
+gui.eu2emc.eu_input=EU Input: %d EU/t
+gui.eu2emc.stored_emc=Stored EMC: %.2f EMC
+gui.eu2emc.total_eu=Total EU In: %d EU
+gui.eu2emc.total_emc=Total EMC Out: %.2f EMC
+gui.eu2emc.collect=Collect EMC

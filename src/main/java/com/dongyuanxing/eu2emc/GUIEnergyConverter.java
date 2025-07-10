@@ -71,7 +71,7 @@ public class GUIEnergyConverter extends GuiContainer {
     public void initGui() {
         super.initGui();
         modeChangeButton = new GuiButton(0, guiLeft + 9, guiTop + 80, 70, 20, I18n.format("gui.eu2emc.change_mode"));
-        collectButton = new GuiButton(0, guiLeft + 97, guiTop + 80, 70, 20, I18n.format("gui.eu2emc.collect"));
+        collectButton = new GuiButton(1, guiLeft + 97, guiTop + 80, 70, 20, I18n.format("gui.eu2emc.collect"));
         this.buttonList.add(modeChangeButton);
         this.buttonList.add(collectButton);
     }

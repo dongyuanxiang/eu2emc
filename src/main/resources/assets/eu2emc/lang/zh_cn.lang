@@ -1,3 +1,4 @@
+gui.eu2emc.lang=zh_cn
 # 方块
 tile.converter.name=能量转换器
 
@@ -7,3 +8,13 @@ gui.eu2emc.stored_emc=储存的EMC: %.2f EMC
 gui.eu2emc.total_eu=总EU输入: %d EU
 gui.eu2emc.total_emc=总EMC输出: %.2f EMC
 gui.eu2emc.collect=收取EMC
+
+gui.eu2emc.change_mode=切换输入模式
+gui.eu2emc.current_mode=当前模式:
+gui.eu2emc.current_mode.0=关闭
+gui.eu2emc.current_mode.1=32EU/t
+gui.eu2emc.current_mode.2=128EU/t
+gui.eu2emc.current_mode.3=512EU/t
+gui.eu2emc.current_mode.4=2048EU/t
+gui.eu2emc.current_mode.5=无限制
+gui.eu2emc.current_mode_error=模式错误

@@ -2,6 +2,7 @@ package com.dongyuanxing.eu2emc;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -11,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class GUIEnergyConverter extends GuiContainer {
     private static final ResourceLocation TEXTURE = new ResourceLocation(EU2EMCConverter.MODID, "textures/gui/converter.png");
@@ -23,6 +25,11 @@ public class GUIEnergyConverter extends GuiContainer {
     private long clientTotalEU = 0;
     private double clientTotalEMC = 0;
 
+    private GuiButton modeChangeButton;
+    private GuiButton collectButton;
+
+    private int clientMode;
+
     // 添加时间计数器
     private int tickCounter = 0;
 
@@ -31,7 +38,7 @@ public class GUIEnergyConverter extends GuiContainer {
         this.te = te;
         this.pos = te.getPos();
         this.xSize = 176;
-        this.ySize = 166;
+        this.ySize = 200;
 
         // 初始化客户端数据
         updateClientData();
@@ -41,6 +48,7 @@ public class GUIEnergyConverter extends GuiContainer {
     private void updateClientData() {
         if (te != null && te.hasWorld() && !te.getWorld().isRemote) {
             // 如果是服务端，直接获取数据
+            clientMode = te.getCurrentMode();
             clientCurrentEU = te.getCurrentEU();
             clientStoredEMC = te.getStoredEMC();
             clientTotalEU = te.getTotalEUConsumed();
@@ -50,6 +58,7 @@ public class GUIEnergyConverter extends GuiContainer {
             TileEntity tile = Minecraft.getMinecraft().world.getTileEntity(pos);
             if (tile instanceof TileEntityEnergyConverter) {
                 TileEntityEnergyConverter clientTE = (TileEntityEnergyConverter) tile;
+                clientMode = clientTE.getCurrentMode();;
                 clientCurrentEU = clientTE.getCurrentEU();
                 clientStoredEMC = clientTE.getStoredEMC();
                 clientTotalEU = clientTE.getTotalEUConsumed();
@@ -61,7 +70,10 @@ public class GUIEnergyConverter extends GuiContainer {
     @Override
     public void initGui() {
         super.initGui();
-        this.buttonList.add(new GuiButton(0, guiLeft + 108, guiTop + 60, 60, 20, I18n.format("gui.eu2emc.collect")));
+        modeChangeButton = new GuiButton(0, guiLeft + 9, guiTop + 80, 70, 20, I18n.format("gui.eu2emc.change_mode"));
+        collectButton = new GuiButton(0, guiLeft + 97, guiTop + 80, 70, 20, I18n.format("gui.eu2emc.collect"));
+        this.buttonList.add(modeChangeButton);
+        this.buttonList.add(collectButton);
     }
 
     @Override
@@ -79,11 +91,25 @@ public class GUIEnergyConverter extends GuiContainer {
         this.fontRenderer.drawString(title, (xSize - this.fontRenderer.getStringWidth(title)) / 2, 6, 0x404040);
 
         // 使用客户端缓存的数据
-        this.fontRenderer.drawString(I18n.format("gui.eu2emc.eu_input", clientCurrentEU), 8, 20, 0x404040);
-        this.fontRenderer.drawString(I18n.format("gui.eu2emc.stored_emc", String.format("%.2f", clientStoredEMC)), 8, 30, 0x404040);
-        this.fontRenderer.drawString(I18n.format("gui.eu2emc.total_eu", clientTotalEU), 8, 40, 0x404040);
-        this.fontRenderer.drawString(I18n.format("gui.eu2emc.total_emc", String.format("%.2f", clientTotalEMC)), 8, 50, 0x404040);
+        this.fontRenderer.drawString(I18n.format("gui.eu2emc.eu_input", clientCurrentEU), 10, 20, 0x404040);
+        this.fontRenderer.drawString(I18n.format("gui.eu2emc.stored_emc", String.format("%.2f", clientStoredEMC)), 10, 30, 0x404040);
+        this.fontRenderer.drawString(I18n.format("gui.eu2emc.total_eu", clientTotalEU), 10, 40, 0x404040);
+        this.fontRenderer.drawString(I18n.format("gui.eu2emc.total_emc", String.format("%.2f", clientTotalEMC)), 10, 50, 0x404040);
+        this.fontRenderer.drawString(I18n.format("gui.eu2emc.current_mode"), 10, 60, 0x404040);
+
+        String lang = I18n.format("gui.eu2emc.lang");
+        switch (lang){
+            case "en_us":
+                this.fontRenderer.drawString(I18n.format("gui.eu2emc.current_mode." + clientMode), 110, 60, 0x404040);
+                break;
+                case "zh_cn":
+                this.fontRenderer.drawString(I18n.format("gui.eu2emc.current_mode." + clientMode), 50, 60, 0x404040);
+                break;
+            default:
+                this.fontRenderer.drawString(I18n.format("gui.eu2emc.current_mode." + clientMode), 100, 60, 0x404040);
+        }
     }
+
 
     @Override
     public void updateScreen() {
@@ -100,7 +126,10 @@ public class GUIEnergyConverter extends GuiContainer {
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 0) {
+        if(button.id == 0){
+            EU2EMCConverter.network.sendToServer(new ModeTogglePacket(pos));
+        }
+        if (button.id == 1) {
             //点击收取按钮后自动关闭gui
             //Minecraft.getMinecraft().player.closeScreen();
             // 发送数据包到服务器处理收集请求

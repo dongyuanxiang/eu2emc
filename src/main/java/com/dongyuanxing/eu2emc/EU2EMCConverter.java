@@ -33,6 +33,8 @@ public class EU2EMCConverter {
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
         network.registerMessage(EMCCollectPacket.Handler.class, EMCCollectPacket.class, 0, Side.SERVER);
 
+        network.registerMessage(ModeTogglePacket.Handler.class, ModeTogglePacket.class, 1, Side.SERVER);
+
         // 注册GUI处理器
 
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());

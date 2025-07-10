@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.MinecraftForge;
+import scala.Int;
 
 public class TileEntityEnergyConverter extends TileEntity implements ITickable, IEnergySink {
     // 添加volatile修饰符确保多线程可见性
@@ -26,6 +27,9 @@ public class TileEntityEnergyConverter extends TileEntity implements ITickable, 
     private boolean isAdded = false;
 
     private static final double EU_TO_EMC_RATIO = 0.08;
+
+    //默认模式
+    private int currentMode=5;
 
     // 添加数据同步标记
     private boolean needsDataSync = false;
@@ -97,19 +101,59 @@ public class TileEntityEnergyConverter extends TileEntity implements ITickable, 
         }
     }
 
+    public void toggleCurrentMode(){
+        currentMode = (currentMode + 1) % 6;
+        System.out.println(currentMode);
+        needsDataSync = true;
+        markDirty();
+    }
+
+    public int getCurrentMode() {
+        return currentMode;
+    }
+
+    public double getCurrentModeLimit() {
+        switch (currentMode) {
+            case 0:
+                return 0;
+            case 1:
+                return 32;
+            case 2:
+                return 128;
+            case 3:
+                return 512;
+            case 4:
+                return 2048;
+            default:
+                return Double.MAX_VALUE;
+        }
+    }
+
+    @Override
+    public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing side) {
+        return true;
+    }
+
     @Override
     public double injectEnergy(EnumFacing direction, double amount, double voltage) {// 限制输入速率
-        double emcProduced = amount * EU_TO_EMC_RATIO;
+        double limit = getCurrentModeLimit();
+        if (limit <= 0){
+            return amount;
+        }
+
+        double used = Math.min(amount, limit);
+
+        double emcProduced = used * EU_TO_EMC_RATIO;
 
         storedEMC += emcProduced;
-        totalEUConsumed += (long) amount;
+        totalEUConsumed += (long) used;
         totalEMCProduced += emcProduced;
-        currentEU = (int) amount;
+        currentEU += (int) used;
 
         // 标记需要同步
         needsDataSync = true;
         markDirty();
-        return 0;
+        return amount - used;
     }
 
     // 收集EMC方法
@@ -134,6 +178,7 @@ public class TileEntityEnergyConverter extends TileEntity implements ITickable, 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
+        currentMode = compound.getInteger("CurrentMode");
         storedEMC = compound.getDouble("StoredEMC");
         totalEUConsumed = compound.getLong("TotalEU");
         totalEMCProduced = compound.getDouble("TotalEMC");
@@ -143,6 +188,7 @@ public class TileEntityEnergyConverter extends TileEntity implements ITickable, 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
+        compound.setInteger("CurrentMode", currentMode);
         compound.setDouble("StoredEMC", storedEMC);
         compound.setLong("TotalEU", totalEUConsumed);
         compound.setDouble("TotalEMC", totalEMCProduced);
@@ -156,10 +202,7 @@ public class TileEntityEnergyConverter extends TileEntity implements ITickable, 
     public double getTotalEMCProduced() { return totalEMCProduced; }
     public int getCurrentEU() { return currentEU; }
 
-    @Override
-    public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing side) {
-        return true;
-    }
+
 
     @Override
     public double getDemandedEnergy() {
